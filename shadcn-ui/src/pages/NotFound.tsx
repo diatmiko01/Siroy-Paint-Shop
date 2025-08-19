@@ -1,6 +1,9 @@
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 export default function NotFoundPage() {
+  const navigate = useNavigate();
+  
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50 p-6 text-center">
       <div className="space-y-6 max-w-md">
@@ -11,10 +14,10 @@ export default function NotFoundPage() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Button asChild>
-            <a href="/">Return Home</a>
+          <Button onClick={() => navigate('/')}>
+            Return Home
           </Button>
-          <Button variant="outline" onClick={() => window.history.back()}>
+          <Button variant="outline" onClick={() => navigate(-1)}>
             Go Back
           </Button>
         </div>

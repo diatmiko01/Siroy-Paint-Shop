@@ -3,8 +3,11 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search, ShoppingCart, Star, Truck, Shield, Headphones } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Index() {
+  const navigate = useNavigate();
+  
   const categories = [
     { name: 'Cat Dasar (Primer)', icon: '🎨', count: '150+ Produk' },
     { name: 'Cat Warna (Base Coat)', icon: '🌈', count: '500+ Warna' },
@@ -87,7 +90,7 @@ export default function Index() {
               <Button variant="outline" size="sm">
                 Login
               </Button>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700" onClick={() => navigate('/cart')}>
                 <ShoppingCart className="h-4 w-4 mr-2" />
                 Cart (0)
               </Button>
@@ -108,10 +111,10 @@ export default function Index() {
                 Dari primer hingga clear coat, temukan semua kebutuhan cat mobil berkualitas tinggi dengan harga terbaik
               </p>
               <div className="flex space-x-4">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700" onClick={() => navigate('/catalog')}>
                   Jelajahi Produk
                 </Button>
-                <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-gray-900">
+                <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-gray-900" onClick={() => navigate('/calculator')}>
                   Kalkulator Cat
                 </Button>
               </div>
@@ -145,7 +148,7 @@ export default function Index() {
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Kategori Produk Unggulan</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {categories.map((category, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer">
+              <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate('/catalog')}>
                 <CardContent className="p-6 text-center">
                   <div className="text-4xl mb-3">{category.icon}</div>
                   <h3 className="font-semibold text-sm mb-2">{category.name}</h3>
@@ -162,7 +165,7 @@ export default function Index() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900">Produk Terlaris</h2>
-            <Button variant="outline">Lihat Semua</Button>
+            <Button variant="outline" onClick={() => navigate('/catalog')}>Lihat Semua</Button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map((product) => (
@@ -193,8 +196,8 @@ export default function Index() {
                         )}
                       </div>
                     </div>
-                    <Button className="w-full mt-3 bg-blue-600 hover:bg-blue-700" size="sm">
-                      Tambah ke Keranjang
+                    <Button className="w-full mt-3 bg-blue-600 hover:bg-blue-700" size="sm" onClick={() => navigate(`/product/${product.id}`)}>
+                      Lihat Detail
                     </Button>
                   </div>
                 </CardContent>
