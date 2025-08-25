@@ -8,153 +8,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
 import { Search, Filter, Star, ShoppingCart, Grid, List } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-interface Product {
-  id: number;
-  name: string;
-  brand: string;
-  type: string;
-  finish: string;
-  price: number;
-  originalPrice?: number;
-  rating: number;
-  reviews: number;
-  image: string;
-  badge?: string;
-  carBrand: string;
-  size: string;
-  inStock: boolean;
-  colorCode?: string;
-}
+import { products, getPrimaryImage, Product } from '@/products';
 
 export default function ProductCatalog() {
   const navigate = useNavigate();
   
-  const [products] = useState<Product[]>([
-    {
-      id: 1,
-      name: 'PPG Deltron DG Performance Clear Coat',
-      brand: 'PPG',
-      type: 'Clear Coat',
-      finish: 'Glossy',
-      price: 850000,
-      originalPrice: 950000,
-      rating: 4.8,
-      reviews: 124,
-      image: '/api/placeholder/300/300',
-      badge: 'Best Seller',
-      carBrand: 'Universal',
-      size: '1L',
-      inStock: true
-    },
-    {
-      id: 2,
-      name: 'Sikkens Autocryl 2K Base Coat - Pearl White',
-      brand: 'Sikkens',
-      type: 'Base Coat',
-      finish: 'Pearl',
-      price: 650000,
-      rating: 4.9,
-      reviews: 89,
-      image: '/api/placeholder/300/300',
-      badge: 'Premium',
-      carBrand: 'Toyota',
-      size: '500ml',
-      inStock: true,
-      colorCode: '040'
-    },
-    {
-      id: 3,
-      name: 'BASF R-M Agilis Primer Surfacer',
-      brand: 'BASF',
-      type: 'Primer',
-      finish: 'Matte',
-      price: 425000,
-      originalPrice: 475000,
-      rating: 4.7,
-      reviews: 203,
-      image: '/api/placeholder/300/300',
-      badge: 'Promo',
-      carBrand: 'Universal',
-      size: '1L',
-      inStock: true
-    },
-    {
-      id: 4,
-      name: 'Nippon Paint Thinner Standard Grade',
-      brand: 'Nippon Paint',
-      type: 'Thinner',
-      finish: 'N/A',
-      price: 125000,
-      rating: 4.6,
-      reviews: 156,
-      image: '/api/placeholder/300/300',
-      badge: 'Popular',
-      carBrand: 'Universal',
-      size: '1L',
-      inStock: true
-    },
-    {
-      id: 5,
-      name: 'Sikkens Autocryl 2K Base - Midnight Black',
-      brand: 'Sikkens',
-      type: 'Base Coat',
-      finish: 'Solid',
-      price: 580000,
-      rating: 4.8,
-      reviews: 67,
-      image: '/api/placeholder/300/300',
-      carBrand: 'Honda',
-      size: '500ml',
-      inStock: false,
-      colorCode: 'NH731P'
-    },
-    {
-      id: 6,
-      name: 'PPG Envirobase High Performance - Metallic Silver',
-      brand: 'PPG',
-      type: 'Base Coat',
-      finish: 'Metallic',
-      price: 720000,
-      rating: 4.9,
-      reviews: 45,
-      image: '/api/placeholder/300/300',
-      badge: 'New',
-      carBrand: 'BMW',
-      size: '1L',
-      inStock: true,
-      colorCode: 'A83'
-    },
-    {
-      id: 7,
-      name: 'BASF Glasurit 93 Line Hardener',
-      brand: 'BASF',
-      type: 'Hardener',
-      finish: 'N/A',
-      price: 285000,
-      rating: 4.5,
-      reviews: 92,
-      image: '/api/placeholder/300/300',
-      carBrand: 'Universal',
-      size: '500ml',
-      inStock: true
-    },
-    {
-      id: 8,
-      name: 'Nippon Paint Spotblender Pro',
-      brand: 'Nippon Paint',
-      type: 'Blender',
-      finish: 'Satin',
-      price: 195000,
-      rating: 4.4,
-      reviews: 78,
-      image: '/api/placeholder/300/300',
-      carBrand: 'Universal',
-      size: '500ml',
-      inStock: true
-    }
-  ]);
-
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -170,7 +28,7 @@ export default function ProductCatalog() {
   const brands = [...new Set(products.map(p => p.brand))];
   const types = [...new Set(products.map(p => p.type))];
   const finishes = [...new Set(products.map(p => p.finish).filter(f => f !== 'N/A'))];
-  const carBrands = [...new Set(products.map(p => p.carBrand))];
+  const carBrands = [...new Set(products.flatMap(p => p.compatibleCars))];
 
   useEffect(() => {
     const filtered = products.filter(product => {
@@ -181,7 +39,8 @@ export default function ProductCatalog() {
       const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(product.brand);
       const matchesType = selectedTypes.length === 0 || selectedTypes.includes(product.type);
       const matchesFinish = selectedFinishes.length === 0 || selectedFinishes.includes(product.finish);
-      const matchesCarBrand = selectedCarBrands.length === 0 || selectedCarBrands.includes(product.carBrand);
+      const matchesCarBrand = selectedCarBrands.length === 0 || 
+                             product.compatibleCars.some(car => selectedCarBrands.includes(car));
       const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
       const matchesRating = product.rating >= minRating;
       const matchesStock = !showInStockOnly || product.inStock;
@@ -267,36 +126,6 @@ export default function ProductCatalog() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
-              <h1 className="text-2xl font-bold text-gray-900">SiroyAuto</h1>
-              <span className="ml-2 text-sm text-gray-500">Professional Paint</span>
-            </div>
-            <div className="flex-1 max-w-2xl mx-8">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Cari cat mobil, kode warna, atau merek..."
-                  className="pl-10 pr-4 w-full"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm">Login</Button>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700" onClick={() => navigate('/cart')}>
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Cart (0)
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Filters Sidebar */}
@@ -420,7 +249,7 @@ export default function ProductCatalog() {
                   <Checkbox
                     id="in-stock"
                     checked={showInStockOnly}
-                    onCheckedChange={setShowInStockOnly}
+                    onCheckedChange={(checked) => setShowInStockOnly(checked as boolean)}
                   />
                   <label htmlFor="in-stock" className="text-sm">Hanya yang tersedia</label>
                 </div>
@@ -481,9 +310,9 @@ export default function ProductCatalog() {
                       <>
                         <div className="relative">
                           <img
-                            src={product.image}
+                            src={getPrimaryImage(product)}
                             alt={product.name}
-                            className="w-full h-48 object-cover rounded-t-lg"
+                            className="w-full h-80 object-cover rounded-t-lg"
                           />
                           {product.badge && (
                             <Badge className="absolute top-2 left-2 bg-blue-600">{product.badge}</Badge>
@@ -517,7 +346,7 @@ export default function ProductCatalog() {
                                 </span>
                               )}
                             </div>
-                            <span className="text-xs text-gray-500">{product.size}</span>
+                            <span className="text-xs text-gray-500">{product.sizes[0]?.size}</span>
                           </div>
                           <Button 
                             className="w-full bg-blue-600 hover:bg-blue-700" 
@@ -533,7 +362,7 @@ export default function ProductCatalog() {
                       <div className="flex space-x-4">
                         <div className="relative flex-shrink-0">
                           <img
-                            src={product.image}
+                            src={getPrimaryImage(product)}
                             alt={product.name}
                             className="w-24 h-24 object-cover rounded-lg"
                           />
@@ -547,7 +376,7 @@ export default function ProductCatalog() {
                               <div className="flex items-center space-x-2 mb-1">
                                 <Badge variant="outline" className="text-xs">{product.brand}</Badge>
                                 <Badge variant="secondary" className="text-xs">{product.type}</Badge>
-                                <Badge variant="outline" className="text-xs">{product.size}</Badge>
+                                <Badge variant="outline" className="text-xs">{product.sizes[0]?.size}</Badge>
                               </div>
                               <h3 className="font-semibold mb-1">{product.name}</h3>
                               {product.colorCode && (

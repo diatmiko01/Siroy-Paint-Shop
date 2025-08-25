@@ -137,25 +137,6 @@ export default function PaintCalculator() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
-              <h1 className="text-2xl font-bold text-gray-900">SiroyAuto</h1>
-              <span className="ml-2 text-sm text-gray-500">Professional Paint</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm" onClick={() => navigate('/catalog')}>Kembali ke Katalog</Button>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700" onClick={() => navigate('/cart')}>
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Cart (0)
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="text-center mb-8">

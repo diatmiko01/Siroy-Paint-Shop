@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { ShoppingCart, Plus, Minus, Trash2, ArrowLeft, Truck, CreditCard, Tag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import MainLayout from '../components/layout/MainLayout';
 
 interface CartItem {
   id: number;
@@ -138,31 +139,24 @@ export default function ShoppingCartPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <Button variant="ghost" size="sm" className="mr-4" onClick={() => navigate('/catalog')}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Lanjut Belanja
-              </Button>
-              <h1 className="text-2xl font-bold text-gray-900 cursor-pointer" onClick={() => navigate('/')}>SiroyAuto</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm">Login</Button>
-            </div>
-          </div>
-        </div>
-      </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center mb-8">
-          <ShoppingCart className="h-8 w-8 text-blue-600 mr-3" />
-          <h2 className="text-3xl font-bold text-gray-900">Keranjang Belanja</h2>
-          <Badge variant="secondary" className="ml-4">
-            {cartItems.length} item
-          </Badge>
+        <div className="flex items-center justify-between mb-8">
+          {/* Bagian Kiri: Judul */}
+          <div className="flex items-center">
+            <ShoppingCart className="h-8 w-8 text-blue-600 mr-3" />
+            <h2 className="text-3xl font-bold text-gray-900">Keranjang Belanja</h2>
+            <Badge variant="secondary" className="ml-4">
+              {cartItems.length} item
+            </Badge>
+          </div>
+          {/* Bagian Kanan: Tombol Kembali */}
+          <div>
+            <Button variant="outline" onClick={() => navigate('/')}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Kembali ke Beranda
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -370,6 +364,7 @@ export default function ShoppingCartPage() {
                     className="w-full bg-blue-600 hover:bg-blue-700" 
                     size="lg"
                     disabled={selectedItems.length === 0}
+                    onClick={() => navigate('/checkout')}
                   >
                     <CreditCard className="h-5 w-5 mr-2" />
                     Checkout ({selectedItems.length} item)
